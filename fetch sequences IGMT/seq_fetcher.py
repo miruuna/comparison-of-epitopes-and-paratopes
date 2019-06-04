@@ -1,10 +1,10 @@
+
 from bs4 import BeautifulSoup
 import requests
 import re
 
-page_link = "http://www.imgt.org/3Dstructure-DB/cgi/details.cgi?pdbcode=1A2Y"
-page_response = requests.get(page_link, timeout=5)
-soup = BeautifulSoup(page_response.text, "html.parser")
+pdb_codes = ['1A2Y', '1bql']
+
 
 def get_chain(the_class):
     the_td = soup.find_all('td', class_ = the_class)
@@ -25,5 +25,9 @@ def get_light_chain(soup):
 def get_heavy_chain(soup):
     return(get_chain("data_h"))
 
-print(get_light_chain(soup))
-print(get_heavy_chain(soup))
+for pdb in pdb_codes:
+    page_link = "http://www.imgt.org/3Dstructure-DB/cgi/details.cgi?pdbcode="+pdb
+    page_response = requests.get(page_link, timeout=5)
+    soup = BeautifulSoup(page_response.text, "html.parser")
+    print(get_light_chain(soup))
+    print(get_heavy_chain(soup))
