@@ -1,9 +1,21 @@
 
+import matplotlib.pyplot as plt
 import os
 import csv
+import pandas as pd
+import seaborn as sns
+import plotly.plotly as py
+import plotly.graph_objs as go
+import numpy as np
+import skimage;
+from skimage.color import rgb2gray
 
 rootdir = os.getcwd()
 def get_subdir():
+    """
+
+    :return: array of subdir names, representing the pdb_codes
+    """
     subdir_list =[]
     for dirs, subdirs, files in os.walk(rootdir+'\\out_\\'): ##find subdirectories and store them as strings
         for subdir in subdirs:
@@ -12,6 +24,10 @@ def get_subdir():
         return(subdir_list)
 
 def store_data(): ##creates a nested dictionary containing the contact residues
+    """
+    Loops through every directory in the out_/ folder and for each txt file it extracts 4the coordinates of each position
+    :return: a dictionary of dictionary of arrays
+    """
     file_dict ={}
     for subdir in get_subdir():
         for root, dir, files in os.walk(rootdir+'\\out_\\'+subdir+"\\"):
@@ -23,7 +39,7 @@ def store_data(): ##creates a nested dictionary containing the contact residues
                     with open(rootdir+'\\out_\\'+subdir+"\\"+file) as csvfile:
                         reader = csv.reader(csvfile, delimiter=',')
                         for row in reader:
-                            chains_dict[file].append(row)
+                            chains_dict[file].append(row) ##rename dict key molecule_1 and 2 to antibody and antigen
 
                         if file == 'molecule_1.txt.csv':
                             chains_dict['antibody'] = chains_dict.pop('molecule_1.txt.csv')
@@ -39,6 +55,10 @@ def store_data(): ##creates a nested dictionary containing the contact residues
 dict = store_data()
 
 def get_chain():
+    """
+    Function to extract just the information about light and heavy chains
+    :return: dictionary with keys: heavy and light chains
+    """
     dict = store_data()
     dict_chains={}
 
@@ -62,7 +82,51 @@ def get_chain():
             #light[i].update(contact)
     return dict_chains
 
+def get_epitope():
+    """
+    Extracts just the coordinates of the epitopes for all the pdb codes
+    :return: a dictionary of array
+    """
+    dict = store_data()
+    dict_epitopes={}
+    for subdir in get_subdir():
+        dict_epitopes[subdir]=[]
+        for i in range(0, len(dict[subdir]['antigen'])-1):
+            contact = dict[subdir]['antigen'][i].__getitem__(2)
+            position= dict[subdir]['antigen'][i].__getitem__(1)
+            if contact =='C':
+                dict_epitopes[subdir].append(position)
+    return dict_epitopes
+
+def get_epitope_list():
+    """
+    Transforms into an 2D array the dict of arrays containing coordinates of contact residues in the epitopes
+    :return: 2D Array
+    """
+    dict = store_data()
+    list_epitopes=[]
+    for subdir in get_subdir():
+        list_1=[]
+        for i in range(0, len(dict[subdir]['antigen'])-1):
+            contact = dict[subdir]['antigen'][i].__getitem__(2)
+            position= dict[subdir]['antigen'][i].__getitem__(1)
+            if contact =='C':
+                list_1.append(position)
+        list_epitopes.append(list_1)
+    return list_epitopes
+
+
 
 
 #print(store_data())
-print(get_chain())
+#print(get_chain())
+print(get_epitope_list())
+
+d = get_epitope_list()
+
+
+s = pd.DataFrame(d, index=get_subdir())
+s.fillna(value=pd.np.nan, inplace=True)
+#ax = sns.heatmap(s)
+#plt.show()
+print(s)
