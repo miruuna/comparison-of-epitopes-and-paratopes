@@ -10,7 +10,7 @@ Description: Extracts the chain annotations for given pdb structures
 from bs4 import BeautifulSoup
 import requests
 import re
-import get_residues as residues
+import get_contact_residues as residues
 pdb_codes = residues.get_subdir()
 
 
