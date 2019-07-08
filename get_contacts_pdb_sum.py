@@ -5,11 +5,13 @@ import re
 
 #read the chain annotation dictionary  and the pdb codes array saved in json format
 annotation = json.loads(open('data.json').read())
-pdb_codes= json.loads(open('pdb_codes.json').read())
+pdb_codes1= json.loads(open('pdb_codes.json').read())
+pdb_codes=['1a2y']
 
 
-anno_dict={}
+
 def get_annotation(pdb):
+    anno_dict={}
     for antigen_chain in annotation[pdb]['antigen']:
         antibody_dict={}
         for antibody_chain in annotation[pdb]['antibody']:
@@ -20,14 +22,8 @@ def get_annotation(pdb):
             for p in soup.find_all('p'):
                 for line in soup.text.split("\n"):
                     line_list.append(line) #for each page it generates a list of the text lines in the body of the page
-            """
-            if "Hydrogen bonds" not in line_list:
-                return("HB not: ", pdb, "antibody: ", antibody_chain, "antigen: ", antigen_chain, page_link)
-            elif "Non-bonded contacts" not in line_list:
-                return("Non-bonded not in: ", pdb, "antibody: ", antibody_chain, "antigen: ", antigen_chain)
-            else:
-                return("all in: ", page_link)
-            """
+
+
             #search_h_bonded=line_list[line_list.index('Hydrogen bonds')+7:line_list.index('Non-bonded contacts')-1]
             big_dict={}
 
@@ -46,18 +42,18 @@ def get_annotation(pdb):
                         "res2_pos":column[10]
                     }
 
-                res_anno_bonded.append(dict_res_annotation1) 
-            big_dict["h_bonded"]=(res_anno_bonded)
+                    res_anno_bonded.append(dict_res_annotation1)
+                big_dict["h_bonded"]=(res_anno_bonded)
+            res_anno_non_bonded=[]
             if 'Non-bonded contacts' not in line_list:
                 big_dict['non_h_bonded']=[]
 
+            elif "Salt bridges" in line_list:
+                search_non_bonded_all=line_list[line_list.index('Non-bonded contacts')+7:line_list.index(line_list[-1])]
+                search_non_bonded=line_list[:line_list.index("Salt bridges")-1]
+
             else:
-                search_non_bonded_all=line_list[line_list.index('Non-bonded contacts')+7:line_list.index(line_list[-6])]
-                res_anno_non_bonded=[]
-                if "Salt bridges" in search_non_bonded_all:
-                    search_non_bonded=search_non_bonded_all[:search_non_bonded_all.index("Salt bridges")-1]
-                else:
-                    search_non_bonded=line_list[line_list.index('Non-bonded contacts')+7:line_list.index(line_list[-8])]
+                search_non_bonded=line_list[line_list.index('Non-bonded contacts')+7:line_list.index(line_list[-6])]
 
 
                 for line in search_non_bonded:
@@ -69,22 +65,23 @@ def get_annotation(pdb):
                         "res2_pos":column[10]
                     }
 
-                res_anno_non_bonded.append(dict_res_annotation1)
-            big_dict["non_h_bonded"]=(res_anno_non_bonded)
+                    res_anno_non_bonded.append(dict_res_annotation1)
+                big_dict["non_h_bonded"]=(res_anno_non_bonded)
 
 
 
             antibody_dict[antibody_chain]=big_dict
         anno_dict[antigen_chain]=antibody_dict
+
     return anno_dict
 
 
-
 annotation_all_pdbs={}
-for pdb in pdb_codes:
-    try:
-        annotation_all_pdbs[pdb]=get_annotation(pdb)
-    except:
-        continue
-with open('contact_residues_all_imgt.json', 'w') as ctr: #save the contact residues in a json file
+for pdb in pdb_codes1:
+    annotation_all_pdbs[pdb]=get_annotation(pdb)
+    #try:
+        #annotation_all_pdbs[pdb]=get_annotation(pdb)
+    #except:
+        #continue
+with open('contact_residues_all_imgtt.json', 'w') as ctr: #save the contact residues in a json file
     json.dump(annotation_all_pdbs, ctr)
