@@ -6,7 +6,7 @@ import re
 #read the chain annotation dictionary  and the pdb codes array saved in json format
 annotation = json.loads(open('data.json').read())
 pdb_codes1= json.loads(open('pdb_codes.json').read())
-pdb_codes=['1a2y']
+pdb_codes=['3hfm']
 
 
 
@@ -49,13 +49,8 @@ def get_annotation(pdb):
                 big_dict['non_h_bonded']=[]
 
             elif "Salt bridges" in line_list:
-                search_non_bonded_all=line_list[line_list.index('Non-bonded contacts')+7:line_list.index(line_list[-1])]
-                search_non_bonded=line_list[:line_list.index("Salt bridges")-1]
 
-            else:
-                search_non_bonded=line_list[line_list.index('Non-bonded contacts')+7:line_list.index(line_list[-6])]
-
-
+                search_non_bonded=line_list[line_list.index('Non-bonded contacts')+7:line_list.index("Salt bridges")-1]
                 for line in search_non_bonded:
                     column=line.split()
                     dict_res_annotation1={
@@ -67,6 +62,22 @@ def get_annotation(pdb):
 
                     res_anno_non_bonded.append(dict_res_annotation1)
                 big_dict["non_h_bonded"]=(res_anno_non_bonded)
+
+            else:
+                search_non_bonded=line_list[line_list.index('Non-bonded contacts')+7:line_list.index(line_list[-6])]
+                for line in search_non_bonded:
+                    column=line.split()
+                    dict_res_annotation1={
+                        "res1_name": column[3],
+                            "res1_pos": column[4],
+                        "res2_name": column[9],
+                        "res2_pos":column[10]
+                    }
+
+                    res_anno_non_bonded.append(dict_res_annotation1)
+                big_dict["non_h_bonded"]=(res_anno_non_bonded)
+
+
 
 
 
@@ -80,8 +91,8 @@ annotation_all_pdbs={}
 for pdb in pdb_codes1:
     annotation_all_pdbs[pdb]=get_annotation(pdb)
     #try:
-        #annotation_all_pdbs[pdb]=get_annotation(pdb)
+    #annotation_all_pdbs[pdb]=get_annotation(pdb)
     #except:
-        #continue
+    #continue
 with open('contact_residues_all_imgtt.json', 'w') as ctr: #save the contact residues in a json file
     json.dump(annotation_all_pdbs, ctr)
