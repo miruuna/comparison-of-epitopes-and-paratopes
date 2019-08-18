@@ -5,7 +5,11 @@ import os
 from Bio.SubsMat import MatrixInfo as matlist
 from Bio import pairwise2
 from Bio.pairwise2 import format_alignment
-
+m1=['2dqd', '1xgr', '1xgt', '1xgq', '1dqj', '2dqc', '1c08', '1xgu', '1ic5', '1ic4', '1ic7', '2dqh', '1ua6', '1xgp', '2dqe', '2dqg']
+m2=['1bql','1mlc', '2iff']
+cm=['1jto', '1jtp', '1jtt','1xfp','1zmy','2i25','2i26']
+cm2=['1zvy','1sq2','1t6v']
+cm3=['1ri8','1rjc','1zv5']
 annotation = json.loads(open('data_lysozyme_update.json').read())
 pdb_codes= json.loads(open('pdb_codes_lysozyme.json').read())
 s1=['1a2y', '1fdl', '1g7h', '1g7i', '1g7j', '1g7l', '1g7m', '1kir', '1vfb']
@@ -76,15 +80,17 @@ def write_new_file():
             f2.write(line)
 
 
-def get_alignment():
+def get_alignment(group):
     matrix = matlist.blosum62
     p={}
-    for k in pdb_codes:
+    for k in group:
         p[k]=0
-        for i in pdb_codes:
+        for i in group:
             if i!=k:
                 for al1,al2, score, begin, end in pairwise2.align.globalms(get_sequences_from_pdb()[k], get_sequences_from_pdb()[i], 2, -1, -.5, -.1):
                     p[k]+=score
     return p
-with open('pairwise_score.txt', 'w') as ctr: #save the contact residues in a json file
-   json.dump(get_alignment(), ctr)
+groups= [(cm,"cm1"),(cm2,"cm2"),(cm3, "cm3"), (m1, "m1"),(m2,"m2")]
+for (a,b) in groups:
+    with open('pairwise_score'+b+'.txt', 'w') as ctr: #save the contact residues in a json file
+        json.dump(get_alignment(a), ctr)
