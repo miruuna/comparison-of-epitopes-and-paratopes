@@ -8,34 +8,23 @@ from matplotlib.colors import ListedColormap
 from sortedcontainers import SortedDict
 #import numbering as numbering
 from collections import defaultdict
-c2=['1ic5', '1ic7']
-s1=['1a2y', '1fdl', '1g7h', '1g7i', '1g7j', '1g7l', '1g7m', '1kir', '1vfb']
-s2=['1c08', '1j1o', '1j1p', '1j1x', '2dqi', '2dqj', '2znw', '3a67', '3a6b', '3a6c', '3d9a', '3hfm']
-s3=['1dqj', '1nby', '1nbz','1ua6', '1uac']
-s4=['2eiz', '2eks', '2yss']
-s5=['1jto', '1jtp', '1jtt']
-g1a=['1ri8', '1bql',  '1zv5', '1mlc', '2iff']
-g1b=[ '1a2y', '1kiq', '1kip']
-g1c=['1jto', '1xfp']
-g22=['2dqd', '1xgr', '1xgt', '1xgq', '1dqj', '2dqc', '1c08', '1xgu', '1ic5', '1ic4', '1ic7', '2dqh', '1ua6', '1xgp', '2dqe', '2dqg']
-g1_mice= g22
-g2_mice= g1a
-g3_cs=['1jto','1jtp', '1jtt','1rjc','1xfp','1zmy','1t6v','1sq2','2i25','2i26']
-g1=['2dqd', '1xgr', '1xgt', '1xgq', '1dqj', '2dqc', '1c08', '1xgu', '1ic5', '1ic4', '1ic7', '2dqh', '1ua6', '1xgp', '2dqe', '2dqg']
 
-c_and_m=['1jto', '1jtp', '1jtt', '1mel', '1op9', '1ri8', '1rjc', '1sq2', '1t6v', '1xfp', '1zmy', '1zv5', '1zvh', '1zvy', '2i25', '2i26', '3eba', '4i0c']
-m1=['2dqd', '1xgr', '1xgt', '1xgq', '1dqj', '2dqc', '1c08', '1xgu', '1ic5', '1ic4', '1ic7', '2dqh', '1ua6', '1xgp', '2dqe', '2dqg']
-m2=['1bql','1mlc', '2iff']
-cm=['1jto', '1jtp', '1jtt','1xfp','1zmy','2i25','2i26']
-cm2=['1zvy','1sq2','1t6v']
-cm3=['1ri8','1rjc','1zv5']
+
+c_s=['1jto', '1jtp', '1jtt','1xfp','1zmy','2i25','2i26','1zvy','1sq2','1t6v','1ri8','1rjc','1zv5','c']
+m1=['2dqd', '1xgr', '1xgt', '1xgq', '1dqj', '2dqc', '1c08', '1xgu', '1ic5', '1ic4', '1ic7', '2dqh', '1ua6', '1xgp', '2dqe', '2dqg','c']
+m2=['1bql','1mlc', '2iff','c']
+cm=['1jto', '1jtp', '1jtt','1xfp','1zmy','2i25','2i26','c']
+cm2=['1zvy','1sq2','1t6v','c']
+cm3=['1ri8','1rjc','1zv5','c']
 unique=['1sq2','1t6v','2hfm','2i25','2i26','1a2y', '1bql', '1c08', '1dqj', '1dzb', '1ic4', '1ic5', '1ic7', '1jhl', '1kip', '1kiq', '1mlc', '1ndg', '1ndm', '1p2c', '1ua6', '1xgp', '1xgq', '1xgr', '1xgt', '1xgu', '2dqc', '2dqd', '2dqe', '2dqf', '2dqg', '2dqh', '2eiz', '2iff', '4tsa', '4tsb', '4tsc', '4ttd', '1jto', '1op9', '1ri8', '1xfp', '1zmy', '1zv5', '1zvh', '1zvy', '4i0c']
 unique1=['1a2y', '1c08', '1dqj', '1dzb', '1ic4', '1ic5', '1ic7', '1jhl', '1kip', '1kiq', '1mlc', '1ndg', '1ndm', '1p2c', '1ua6', '1xgp', '1xgq', '1xgr', '1xgt', '1xgu', '2dqc', '2dqd', '2dqe', '2dqf', '2dqg', '2dqh', '2eiz', '2iff', '1jto', '1op9', '1ri8', '1xfp', '1zmy', '1zv5', '1zvh', '1zvy', '4i0c']
 #removed  1bql from unique
 #removed 2hfm
+all_groups=m1+m2+cm+cm2+cm3
 
-unique_minus_1=set(unique).difference(set(g1))
-
+mice=['2dqd', '1xgr', '1xgt', '1xgq', '1dqj', '2dqc', '1c08', '1xgu', '1ic5', '1ic4', '1ic7', '2dqh', '1ua6', '1xgp', '2dqe', '2dqg','1bql','1mlc', '2iff']
+camel=['1jto', '1jtp', '1jtt','1xfp','1zmy','1zvy','1ri8','1rjc','1zv5']
+shark=['1sq2','1t6v','2i25','2i26']
 
 species=json.loads(open('species_lysozime.json').read())
 pdb_codes1= json.loads(open('pdb_codes_lysozyme.json').read())
@@ -209,14 +198,16 @@ def run_code(group, name):
     get_heatmap_101(group, name)
 
 def get_heatmap_no_cont_para(group, name, chain, type,  size):
-    contacts1 =json.loads(open('equiv_contacts_dict_lsyozyme_pos_paratope_'+chain+'_'+type+'.json').read())
+    #contacts1 =json.loads(open('equiv_contacts_dict_lsyozyme_pos_paratope_'+chain+'_'+type+'.json').read())
+    contacts_h_bonded=json.loads(open('equiv_contacts_dict_lsyozyme_pos_paratope_'+chain+'_h_bonded.json').read())
+    contacts_all =json.loads(open('equiv_contacts_dict_lsyozyme_pos_paratope_'+chain+'_all.json').read())
 
 
-    cont_dict={}
-    for k, v in contacts1.items():
+    cont_dict_h_bonded={}
+    for k, v in contacts_h_bonded.items():
         for pdb in group:
             if pdb in k:
-                cont_dict[pdb]={}
+                cont_dict_h_bonded[get_species(pdb)+"-"+pdb]={}
                 for pos, names in v.items():
                     try:
                         if len(names)!=0:
@@ -225,22 +216,67 @@ def get_heatmap_no_cont_para(group, name, chain, type,  size):
 
                     except KeyError:
                         continue
-                    cont_dict[pdb].update(dict)
-        df =pd.DataFrame.from_dict(cont_dict,orient='index')
+                    cont_dict_h_bonded[get_species(pdb)+"-"+pdb].update(dict)
+
+    cont_dict_all={}
+    for k, v in contacts_all.items():
+        for pdb in group:
+            if pdb in k:
+                cont_dict_all[get_species(pdb)+"-"+pdb]={}
+                for pos, names in v.items():
+                    try:
+                        if len(names)!=0:
+                            dict={pos: len(names)}
+
+
+                    except KeyError:
+                        continue
+                    cont_dict_all[get_species(pdb)+"-"+pdb].update(dict)
+    cont_h_bonded=cont_dict_h_bonded
+    cont_all=cont_dict_all
+    list_pos_all=[]
+    for y, b in cont_dict_all.items():
+        for pos2, v2 in b.items():
+            list_pos_all.append(pos2)
+    list_pos_h=[]
+    for x, a in cont_dict_h_bonded.items():
+        for pos1, v1 in a.items():
+            list_pos_h.append(pos1)
+    for db in group:
+        for pos in list_pos_all:
+            for posh in list_pos_h:
+                if pos not in posh:
+                    cont_h_bonded[get_species(pdb)+"-"+pdb][pos]=0
+                if posh !=pos:
+                    cont_all[get_species(pdb)+"-"+pdb][posh]=0
+    df_all =pd.DataFrame.from_dict(cont_all,orient='index')
     #df.set_index('pdb',inplace=True)
-    df=df[natsorted(df.columns)]
-    df.groupby(by=species,axis=1)
-    fig, ax = plt.subplots(figsize=(size))
+    df_all=df_all[natsorted(df_all.columns)]
+    df_all.groupby(by=species,axis=1)
+
+
+    df_h =pd.DataFrame.from_dict(cont_h_bonded,orient='index')
+    #df.set_index('pdb',inplace=True)
+    df_h=df_h[natsorted(df_h.columns)]
+    df_h.groupby(by=species,axis=1)
+
+
+
+    fig, (ax1, ax2) = plt.subplots(2,1,figsize=(size))
     fig.autofmt_xdate()
     plt.subplots_adjust(top=0.9) #adjust sublots labels to make room for title
     #plt.suptitle("Number of contacts - " + name, fontsize = 36) #title
-    g = sns.heatmap(df, xticklabels=True, yticklabels=True, ax=ax, linewidths=1, linecolor='black',annot=True, annot_kws={"size": 30}, cmap="YlGnBu", cbar=True)#.set_title(chain+" chain: "+param)
-    ax.tick_params(labelbottom='off',labeltop='on', labelsize=30)
-    plt.yticks(rotation=0)
-    plt.xticks(rotation=90)
-    ax.set_aspect("equal")
-    g.get_figure().savefig("paratope_no_contacts_"+name+"_"+type+".png")
-
+    sns.heatmap(df_all, ax=ax1,xticklabels=True, yticklabels=True, linewidths=0.1, linecolor='black',annot=True, annot_kws={"size": 8}, cmap="YlOrRd", cbar=True)#.set_title("All contacts",y=1.1)
+    ax1.tick_params(labelbottom='off',labeltop='on', labelsize=12)
+    ax1.set_yticklabels(ax1.get_yticklabels(),rotation=0)
+    ax1.set_xticklabels(ax1.get_xticklabels(),rotation=90)
+    ax1.set_aspect("equal")
+    sns.heatmap(df_h, ax=ax2,xticklabels=True, yticklabels=True, linewidths=0.1, linecolor='black',annot=True, annot_kws={"size": 8}, cmap="YlOrRd", cbar=True)#.set_title("H bonded",y=1.1)
+    ax2.tick_params(labelbottom='off',labeltop='on', labelsize=12)
+    ax2.set_yticklabels(ax2.get_yticklabels(),rotation=0)
+    ax2.set_xticklabels(ax2.get_xticklabels(),rotation=90)
+    ax2.set_aspect("equal")
+    plt.show()
 
 def get_heatmap_no_cont(group, name,chain, type, size,x):
     the_contacts=json.loads(open("equiv_contacts_dict_lsyozyme_pos_paratope_"+chain+"_"+ type+".json").read())
@@ -308,19 +344,19 @@ def get_heatmap_fw( group, name,chain, type, size, x):
                         try:
                             if chain =="light":
                                 if int(paratope) in list(range(0,24)):
-                                    dicto[pos].append("FW11")
-                                elif int(paratope) in list(range(34,50)):
+                                    dicto[pos].append("FW1")
+                                elif int(paratope) in list(range(35,50)):
                                     dicto[pos].append("FW2")
-                                elif int(paratope) in list(range(56,89)):
+                                elif int(paratope) in list(range(57,89)):
                                     dicto[pos].append("FW3")
                                 elif int(paratope) >96:
                                     dicto[pos].append("FW4")
                             if chain=="heavy":
-                                if int(paratope) in list(range(0,26)):
-                                    dicto[pos].append("FW11")
-                                elif int(paratope) in list(range(32,52)):
+                                if int(paratope) in list(range(0,31)):
+                                    dicto[pos].append("FW1")
+                                elif int(paratope) in list(range(36,50)):
                                     dicto[pos].append("FW2")
-                                elif int(paratope) in list(range(56,95)):
+                                elif int(paratope) in list(range(66,95)):
                                     dicto[pos].append("FW3")
                                 elif int(paratope) >103:
                                     dicto[pos].append("FW4")
@@ -345,6 +381,8 @@ def get_heatmap_fw( group, name,chain, type, size, x):
 
 def get_heatmap_CDR( group, name,chain, type, size, x):
     cont_paratopes=json.loads(open('equiv_contacts_dict_lsyozyme_pos_paratope_'+chain+'_'+type+'.json').read())
+
+
     #x= cont_paratopes[str(chain)+":"+"h_bonded"]
     #y= epitope.get_contacts("heavy", "non_h_bonded")
     #z= dict(y, **x)
@@ -355,15 +393,19 @@ def get_heatmap_CDR( group, name,chain, type, size, x):
     #contacts_dict=dict(contact_dict, **a)
 
     cont_dict={}
+    pos_antibody={}
     for k, v in cont_paratopes.items():
         for pdb in group:
             d1={}
             if pdb in k:
                 cont_dict[pdb]={}
+                pos_antibody[pdb]={}
                 dicto={}
+                ant_list={}
                 for pos, paratope_list in v.items():
-                    arg_list=[]
+
                     dicto[pos]=[]
+                    ant_list[pos]=[]
                     unique_p_list=[]
 
                     for paratope in paratope_list:
@@ -374,25 +416,33 @@ def get_heatmap_CDR( group, name,chain, type, size, x):
                             if chain =="light":
                                 if int(paratope) in list(range(24,35)):
                                     dicto[pos].append("L1")
+                                    ant_list[pos].append(int(paratope))
                                 elif int(paratope) in list(range(50,57)):
                                     dicto[pos].append("L2")
-                                elif int(paratope) in list(range(89,97)):
+
+                                elif int(paratope) in list(range(89,98)):
                                     dicto[pos].append("L3")
+
                                 else:
                                     dicto[pos].append("O")
                             if chain=="heavy":
-                                if int(paratope) in list(range(26,33)):
+                                if int(paratope) in list(range(31,36)):
                                     dicto[pos].append("H1")
-                                elif int(paratope) in list(range(52,57)):
+
+                                elif int(paratope) in list(range(50,66)):
                                     dicto[pos].append("H2")
+
                                 elif int(paratope) in list(range(95,103)):
                                     dicto[pos].append("H3")
+
                                 else:
                                     dicto[pos].append("o")
+                                    ant_list[pos].append(int(paratope))
 
                         except KeyError:
                             continue
                         cont_dict[pdb].update(dicto)
+                        pos_antibody[pdb].update(ant_list)
 
 
     df3=pd.DataFrame.from_dict(cont_dict,orient='index')
@@ -405,6 +455,14 @@ def get_heatmap_CDR( group, name,chain, type, size, x):
 
     c2=flatten_column(stacked, 'CDR')
     df3.to_excel("g3_cs_heavy.xlsx")
+    #return cont_dict
+    the_list={}
+    for k, v in pos_antibody.items():
+        the_list[k]=[]
+        for pos, e in v.items():
+            if len(e)>0:
+                for elem in e:
+                    the_list[k].append(elem)
     return cont_dict
 
 def get_the_heatmap( group, name,chain, type, size, x):
@@ -435,13 +493,15 @@ def get_the_heatmap( group, name,chain, type, size, x):
                 #    d_pos[p]=90
             if len(list(set(cdr)))==1:
                 if "o" in list(set(cdr)):
-                    d_pos[p]=9
+                    d_pos[p]=8
                 if chain_type+"1" in list(set(cdr)):
                     d_pos[p]=1
                 if chain_type+"2" in list(set(cdr)):
                     d_pos[p]=2
                 if chain_type+"3"in cdr:
                     d_pos[p]=3
+                if chain_type+"4"in cdr:
+                    d_pos[p]=4
         eq_dict_hm[get_species(pdb)+"-"+pdb]=d_pos
     df =pd.DataFrame.from_dict(eq_dict_hm,orient='index')
     #df.set_index('pdb',inplace=True)
@@ -454,7 +514,7 @@ def get_the_heatmap( group, name,chain, type, size, x):
     maxim=int(stacked['Residues'].max())
     minim=int(stacked['Residues'].min())
     cmap=['#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#bdbdbd']
-    the_cmap=cmap[minim-1:maxim-1]
+    the_cmap=cmap[minim-1:maxim ]
     fig, ax = plt.subplots(figsize=size)
     fig.autofmt_xdate()
     plt.subplots_adjust(top=0.9) #adjust sublots labels to make room for title
@@ -464,8 +524,307 @@ def get_the_heatmap( group, name,chain, type, size, x):
     plt.yticks(rotation=0)
     plt.xticks(rotation=90)
     ax.set_aspect("equal")
+    plt.show()
+   # g.get_figure().savefig("FWR_heatmap_"+chain+"_"+name+"_"+type+".png")
+
+def get_heatmap_cdr_bonding( group, name,chain,type,  size, x):
+    no_cdr_b={}
+    cdr_by_species={}
+    eq_dict_all={}
+    if chain=="heavy":
+        chain_type="H"
+    elif chain=="light":
+        chain_type="L"
+    cdr_by_species[chain_type+"3"]=0
+    cdr_by_species[chain_type+"1"]=0
+    cdr_by_species[chain_type+"2"]=0
+    for pdb, pos in get_heatmap_CDR( group, name,chain, type, size, x).items():
+        d_pos={}
+        no_cdr_b[get_species(pdb)+"-"+pdb]={}
+        for p, cdr in pos.items():
+            #eq_dict_hm[pdb][p]=[]
+            no_cdr_b[get_species(pdb)+"-"+pdb][chain_type+"1"]=0
+            no_cdr_b[get_species(pdb)+"-"+pdb][chain_type+"2"]=0
+            no_cdr_b[get_species(pdb)+"-"+pdb][chain_type+"3"]=0
+            if len(list(set(cdr)))>1:
+                if chain_type+"1" in list(set(cdr)):
+                    no_cdr_b[get_species(pdb)+"-"+pdb][chain_type+"1"]+=1
+                    cdr_by_species[chain_type+"1"]+=1
+                if chain_type+"2" in list(set(cdr)):
+                    no_cdr_b[get_species(pdb)+"-"+pdb][chain_type+"2"]+=1
+                    cdr_by_species[chain_type+"2"]+=1
+                if chain_type+"3" in list(set(cdr)):
+                    no_cdr_b[get_species(pdb)+"-"+pdb][chain_type+"3"]+=1
+                    cdr_by_species[chain_type+"3"]+=1
+
+                if chain_type+"1" and chain_type+"2" in list(set(cdr)):
+                        d_pos[p]=4
+                if chain_type+"1" and chain_type+"3" in list(set(cdr)):
+                    d_pos[p]=5
+                if chain_type+"3" and chain_type+"2" in list(set(cdr)):
+                    d_pos[p]=6
+                if chain_type+"3" and chain_type+"2" and chain_type+"1" in list(set(cdr)):
+                    d_pos[p]=7
+                #if chain_type+"1" and "o" in cdr:
+                #   d_pos[p]=70
+                #if chain_type+"2" and "o" in cdr:
+                #    d_pos[p]=80
+                #if "3" and "o" in cdr:
+                #    d_pos[p]=90
+            if len(list(set(cdr)))==1:
+                if "o" in list(set(cdr)):
+                    d_pos[p]=8
+                if chain_type+"1" in list(set(cdr)):
+                    d_pos[p]=1
+                    no_cdr_b[get_species(pdb)+"-"+pdb][chain_type+"1"]+=1
+                    cdr_by_species[chain_type+"1"]+=1
+                if chain_type+"2" in list(set(cdr)):
+                    no_cdr_b[get_species(pdb)+"-"+pdb][chain_type+"2"]+=1
+                    d_pos[p]=2
+                    cdr_by_species[chain_type+"2"]+=1
+                if chain_type+"3"in cdr:
+                    d_pos[p]=3
+                    no_cdr_b[get_species(pdb)+"-"+pdb][chain_type+"3"]+=1
+                    cdr_by_species[chain_type+"3"]+=1
+
+        eq_dict_all[get_species(pdb)+"-"+pdb]=d_pos
+    eq_dict_h_bonded={}
+    for pdb, pos in get_heatmap_CDR( group, name,chain, "h_bonded", size, x).items():
+        d_pos={}
+        for p, cdr in pos.items():
+            #eq_dict_hm[pdb][p]=[]
+            if len(list(set(cdr)))>1:
+
+                if chain_type+"1" and chain_type+"2" in list(set(cdr)):
+                    d_pos[p]=4
+                if chain_type+"1" and chain_type+"3" in list(set(cdr)):
+                    d_pos[p]=5
+                if chain_type+"3" and chain_type+"2" in list(set(cdr)):
+                    d_pos[p]=6
+                if chain_type+"3" and chain_type+"2" and chain_type+"1" in list(set(cdr)):
+                    d_pos[p]=7
+                #if chain_type+"1" and "o" in cdr:
+                #   d_pos[p]=70
+                #if chain_type+"2" and "o" in cdr:
+                #    d_pos[p]=80
+                #if "3" and "o" in cdr:
+                #    d_pos[p]=90
+            if len(list(set(cdr)))==1:
+                if "o" in list(set(cdr)):
+                    d_pos[p]=8
+                if chain_type+"1" in list(set(cdr)):
+                    d_pos[p]=1
+                if chain_type+"2" in list(set(cdr)):
+                    d_pos[p]=2
+                if chain_type+"3"in cdr:
+                    d_pos[p]=3
+        eq_dict_h_bonded[get_species(pdb)+"-"+pdb]=d_pos
+
+    all_list=[]
+    h_list=[]
+    for k, v in eq_dict_all.items():
+        for pos1, v1 in v.items():
+            if pos1 not in all_list:
+                all_list.append(pos1)
+    for k, v in eq_dict_h_bonded.items():
+        for pos1, v1 in v.items():
+            if pos1 not in h_list:
+                h_list.append(pos1)
+    eq_dict_h=eq_dict_h_bonded
+    for pdb in group:
+        for pos_h in h_list:
+            for pos_a in all_list:
+                if pos_a not in h_list:
+                    eq_dict_h_bonded[get_species(pdb)+"-"+pdb][pos_a]=9
+
+    df_all =pd.DataFrame.from_dict(eq_dict_all,orient='index')
+    #df.set_index('pdb',inplace=True)
+    df_all=df_all[natsorted(df_all.columns)]
+    df_all.groupby(by=species,axis=1)
+    df_all.index.rename('PDB', inplace=True)
+    df_h =pd.DataFrame.from_dict(eq_dict_h_bonded,orient='index')
+    #df.set_index('pdb',inplace=True)
+    df_h=df_h[natsorted(df_h.columns)]
+    df_h.groupby(by=species,axis=1)
+    df_h.index.rename('PDB', inplace=True)
+    stacked_h = df_h.stack().reset_index()
+    stacked_h.rename(columns={'level_1': 'Position', 0: 'Residues'}, inplace=True)
+    stacked_h=stacked_h.sort_values(by=['Position'])
+    maxim_h=int(stacked_h['Residues'].max())
+    minim_h=int(stacked_h['Residues'].min())
+    cmap_h=['#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#bdbdbd','#FFFAFA','#faed27','#ffffff','#faed27']
+    the_cmap_h=cmap_h[minim_h-1:maxim_h]
+    stacked_all = df_all.stack().reset_index()
+    stacked_all.rename(columns={'level_1': 'Position', 0: 'Residues'}, inplace=True)
+    stacked_all=stacked_all.sort_values(by=['Position'])
+    maxim_all=int(stacked_all['Residues'].max())
+    minim_all=int(stacked_all['Residues'].min())
+    cmap_all=['#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#bdbdbd','#FFFAFA','#faed27','#ffffff']
+    the_cmap_all=cmap_h[minim_all-1:maxim_all]
+
+    fig, (ax1, ax2) = plt.subplots(2,1,figsize=(size))
+    fig.autofmt_xdate()
+    plt.subplots_adjust(top=0.9) #adjust sublots labels to make room for title
+    #plt.suptitle("Number of contacts - " + name, fontsize = 36) #title
+    sns.heatmap(df_all, xticklabels=True, yticklabels=True, ax=ax1, linewidths=0.1, linecolor='black',annot=False,annot_kws={"size": 10}, cmap=ListedColormap(the_cmap_all), cbar=True,cbar_kws={"shrink": .82})#.set_title("All contacts", y=1.12)
+    ax1.tick_params(labelbottom='off',labeltop='on', labelsize=12)
+    ax1.set_yticklabels(ax1.get_yticklabels(),rotation=0)
+    ax1.set_xticklabels(ax1.get_xticklabels(),rotation=90)
+    ax1.set_aspect("equal")
+    sns.heatmap(df_h, xticklabels=True, yticklabels=True, ax=ax2, linewidths=0.1, linecolor='black',annot=False,annot_kws={"size": 10}, cmap=ListedColormap(the_cmap_h), cbar=True,cbar_kws={"shrink": .82})#.set_title("H-bonded contacts", y=1.12)
+    ax2.tick_params(labelbottom='off',labeltop='on', labelsize=12)
+    ax2.set_yticklabels(ax2.get_yticklabels(),rotation=0)
+    ax2.set_xticklabels(ax2.get_xticklabels(),rotation=90)
+    ax2.set_aspect("equal")
     #plt.show()
-    g.get_figure().savefig("FWR_heatmap_"+chain+"_"+name+"_"+type+".png")
+
+
+
+    print(cdr_by_species)
+    df=pd.DataFrame.from_dict(cdr_by_species, orient="index")
+    df.index.rename('CDR', inplace=True)
+    df.rename(columns={ 0: type}, inplace=True)
+    with open("cdr_freq_"+name+"_"+chain+"_"+type+".json", 'w') as ctr: #save the contact residues in a json file
+        json.dump(cdr_by_species, ctr)
+
+
+def get_the_heatmap_fw(group, name,chain,  size, x):
+
+    eq_dict_all={}
+    if chain=="heavy":
+        chain_type="FW"
+    elif chain=="light":
+        chain_type="FW"
+    for pdb, pos in get_heatmap_fw( group, name,chain, "all", size, x).items():
+        d_pos={}
+        for p, cdr in pos.items():
+            #eq_dict_hm[pdb][p]=[]
+            if len(list(set(cdr)))>1:
+                if chain_type+"1" and chain_type+"2" in list(set(cdr)):
+                    d_pos[p]=7
+                if chain_type+"1" and chain_type+"3" in list(set(cdr)):
+                    d_pos[p]=5
+                if chain_type+"3" and chain_type+"2" in list(set(cdr)):
+                    d_pos[p]=6
+                if chain_type+"3" and chain_type+"2" and chain_type+"1" in list(set(cdr)):
+                    d_pos[p]=8
+                if chain_type+"1" and chain_type+"4" in list(set(cdr)):
+                    d_pos[p]=9
+                if chain_type+"4" and chain_type+"2" in list(set(cdr)):
+                    d_pos[p]=10
+                if chain_type+"3" and chain_type+"4" in list(set(cdr)):
+                    d_pos[p]=11
+                if chain_type+"3" and chain_type+"2" and chain_type+"1" and chain_type+"4" in list(set(cdr)):
+                    d_pos[p]=12
+
+                #if chain_type+"1" and "o" in cdr:
+                #   d_pos[p]=70
+                #if chain_type+"2" and "o" in cdr:
+                #    d_pos[p]=80
+                #if "3" and "o" in cdr:
+                #    d_pos[p]=90
+            if len(list(set(cdr)))==1:
+                if "o" in list(set(cdr)):
+                    d_pos[p]=8
+                if chain_type+"1" in list(set(cdr)):
+                    d_pos[p]=1
+                if chain_type+"2" in list(set(cdr)):
+                    d_pos[p]=2
+                if chain_type+"3"in cdr:
+                    d_pos[p]=3
+                if chain_type+"4"in cdr:
+                    d_pos[p]=4
+        eq_dict_all[get_species(pdb)+"-"+pdb]=d_pos
+    eq_dict_h_bonded={}
+    for pdb, pos in get_heatmap_fw( group, name,chain, "h_bonded", size, x).items():
+        d_pos={}
+        for p, cdr in pos.items():
+            #eq_dict_hm[pdb][p]=[]
+            if len(list(set(cdr)))>1:
+                if chain_type+"1" and chain_type+"2" in list(set(cdr)):
+                    d_pos[p]=7
+                if chain_type+"1" and chain_type+"3" in list(set(cdr)):
+                    d_pos[p]=5
+                if chain_type+"3" and chain_type+"2" in list(set(cdr)):
+                    d_pos[p]=6
+                if chain_type+"3" and chain_type+"2" and chain_type+"1" in list(set(cdr)):
+                    d_pos[p]=8
+                if chain_type+"1" and chain_type+"4" in list(set(cdr)):
+                    d_pos[p]=9
+                if chain_type+"4" and chain_type+"2" in list(set(cdr)):
+                    d_pos[p]=10
+                if chain_type+"3" and chain_type+"4" in list(set(cdr)):
+                    d_pos[p]=11
+                if chain_type+"3" and chain_type+"2" and chain_type+"1" and chain_type+"4" in list(set(cdr)):
+                    d_pos[p]=12
+            if len(list(set(cdr)))==1:
+                if "o" in list(set(cdr)):
+                    d_pos[p]=8
+                if chain_type+"1" in list(set(cdr)):
+                    d_pos[p]=1
+                if chain_type+"2" in list(set(cdr)):
+                    d_pos[p]=2
+                if chain_type+"3"in cdr:
+                    d_pos[p]=3
+        eq_dict_h_bonded[get_species(pdb)+"-"+pdb]=d_pos
+
+    all_list=[]
+    h_list=[]
+    for k, v in eq_dict_all.items():
+        for pos1, v1 in v.items():
+            if pos1 not in all_list:
+                all_list.append(pos1)
+    for k, v in eq_dict_h_bonded.items():
+        for pos1, v1 in v.items():
+            if pos1 not in h_list:
+                h_list.append(pos1)
+    eq_dict_h=eq_dict_h_bonded
+    for pdb in group:
+        for pos_h in h_list:
+            for pos_a in all_list:
+                if pos_a not in h_list:
+                    eq_dict_h_bonded[get_species(pdb)+"-"+pdb][pos_a]=13
+
+    df_all =pd.DataFrame.from_dict(eq_dict_all,orient='index')
+    #df.set_index('pdb',inplace=True)
+    df_all=df_all[natsorted(df_all.columns)]
+    df_all.groupby(by=species,axis=1)
+    df_all.index.rename('PDB', inplace=True)
+    df_h =pd.DataFrame.from_dict(eq_dict_h_bonded,orient='index')
+    #df.set_index('pdb',inplace=True)
+    df_h=df_h[natsorted(df_h.columns)]
+    df_h.groupby(by=species,axis=1)
+    df_h.index.rename('PDB', inplace=True)
+    stacked_h = df_h.stack().reset_index()
+    stacked_h.rename(columns={'level_1': 'Position', 0: 'Residues'}, inplace=True)
+    stacked_h=stacked_h.sort_values(by=['Position'])
+    maxim_h=int(stacked_h['Residues'].max())
+    minim_h=int(stacked_h['Residues'].min())
+    cmap_h=['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928','#ffffff']
+    the_cmap_h=cmap_h[minim_h-1:maxim_h]
+    stacked_all = df_all.stack().reset_index()
+    stacked_all.rename(columns={'level_1': 'Position', 0: 'Residues'}, inplace=True)
+    stacked_all=stacked_all.sort_values(by=['Position'])
+    maxim_all=int(stacked_all['Residues'].max())
+    minim_all=int(stacked_all['Residues'].min())
+    cmap_all=['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928','#ffffff']
+    the_cmap_all=cmap_h[minim_all-1:maxim_all]
+
+    fig, (ax1, ax2) = plt.subplots(2,1,figsize=(size))
+    fig.autofmt_xdate()
+    plt.subplots_adjust(top=0.9) #adjust sublots labels to make room for title
+    #plt.suptitle("Number of contacts - " + name, fontsize = 36) #title
+    sns.heatmap(df_all, xticklabels=True, yticklabels=True, ax=ax1, linewidths=0.1, linecolor='black',annot=False,annot_kws={"size": 10}, cmap=ListedColormap(the_cmap_all), cbar=True,cbar_kws={"shrink": .82})#.set_title("All contacts", y=1.12)
+    ax1.tick_params(labelbottom='off',labeltop='on', labelsize=12)
+    ax1.set_yticklabels(ax1.get_yticklabels(),rotation=0)
+    ax1.set_xticklabels(ax1.get_xticklabels(),rotation=90)
+    ax1.set_aspect("equal")
+    sns.heatmap(df_h, xticklabels=True, yticklabels=True, ax=ax2, linewidths=0.1, linecolor='black',annot=False,annot_kws={"size": 10}, cmap=ListedColormap(the_cmap_h), cbar=True,cbar_kws={"shrink": .82})#.set_title("H-bonded contacts", y=1.12)
+    ax2.tick_params(labelbottom='off',labeltop='on', labelsize=12)
+    ax2.set_yticklabels(ax2.get_yticklabels(),rotation=0)
+    ax2.set_xticklabels(ax2.get_xticklabels(),rotation=90)
+    ax2.set_aspect("equal")
+    plt.show()
 
 
 def get_chain_letter(chain):
@@ -607,7 +966,7 @@ def get_cdr_on_epitope(group,name, chain, type, size, x, the_cdr):
                 elif aa in ["ASN", "GLN"]:
                     aa_type_dict[cdr][get_species(pdb)+"-"+pdb][pos]="cyan"
                     hm_aa_type_dict[cdr][get_species(pdb)+"-"+pdb][pos]=6
-                elif aa in ["Leu", "VAL", "ILE"]:
+                elif aa in ["LEU", "VAL", "ILE"]:
                     aa_type_dict[cdr][get_species(pdb)+"-"+pdb][pos]="green"
                 elif aa in ["GLY"]:
                     hm_aa_type_dict[cdr][get_species(pdb)+"-"+pdb][pos]=7
@@ -772,22 +1131,316 @@ for chain in ["light"]:
 #g2 -30,10
 #g3 - 30,18
 
+"""
+def get_heatmap_ep_shapely(group, name, chain, type,  size):
+    #contacts1 =json.loads(open('equiv_contacts_dict_lsyozyme_pos_paratope_'+chain+'_'+type+'.json').read())
+    contacts_h_bonded=json.loads(open('equiv_contacts_dict_lsyozyme_pos_name_paratope_'+chain+'_h_bonded.json').read())
+    contacts_all =json.loads(open('equiv_contacts_dict_lsyozyme_pos_name_paratope_'+chain+'_all.json').read())
+    aa_type={"1": ["ASP", "GLU"],
+             "2":["CYS","MET"],
+             "3":["LYS","ARG"],
+             "4":["SER","THR"],
+             "5":["PHE","TYR"],
+             "6":["ASN","GLN"],
+             "7":["LEU","VA","ILE"],
+             "8":["GLY"],
+             "9":["ALA"],
+             "10":["TRP"],
+             "11":["HIS"],
+             "12":["PRO"]}
+
+    cont_dict_h_bonded={}
+    for k, v in contacts_h_bonded.items():
+        for pdb in group:
+            if pdb in k:
+                cont_dict_h_bonded[get_species(pdb)+"-"+pdb]={}
+                for pos, names in v.items():
+                    try:
+                        if all(aa in ["ASP", "GLU"]for aa in names) is True:
+
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=1
+                        elif all(aa in ["CYS", "MET"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=2
+                        elif all(aa in ["LYS", "ARG"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=3
+
+                        elif all(aa in ["SER", "THR"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=4
+
+                        elif all(aa in ["PHE", "TYR"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=5
+                        elif all(aa in ["ASN", "GLN"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=6
+                        elif all(aa in ["LEU", "VAL", "ILE"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=7
+                        elif all(aa in ["GLY"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=8
+                        elif all(aa in ["ALA"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=9
+                        elif all(aa in ["TRP"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=10
+                        elif all(aa in ["HIS"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=11
+                        elif all(aa in ["PRO"] for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=12
+                        else:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=13
+
+                    except KeyError:
+                        continue
+    cont_dict_all={}
+    for k, v in contacts_all.items():
+        for pdb in group:
+            if pdb in k:
+                cont_dict_all[get_species(pdb)+"-"+pdb]={}
+                for pos, names in v.items():
+                    try:
+                        if all(aa in ["ASP", "GLU"]for aa in names) is True:
+
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=1
+                        elif all(aa in ["CYS", "MET"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=2
+                        elif all(aa in ["LYS", "ARG"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=3
+
+                        elif all(aa in ["SER", "THR"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=4
+
+                        elif all(aa in ["PHE", "TYR"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=5
+                        elif all(aa in ["ASN", "GLN"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=6
+                        elif all(aa in ["LEU", "VAL", "ILE"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=7
+                        elif all(aa in ["GLY"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=8
+                        elif all(aa in ["ALA"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=9
+                        elif all(aa in ["TRP"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=10
+                        elif all(aa in ["HIS"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=11
+                        elif all(aa in ["PRO"] for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=12
+                        else:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=13
+
+                    except KeyError:
+                        continue
+    cont_h_bonded=cont_dict_h_bonded
+    cont_all=cont_dict_all
+    list_pos_all=[]
+    for y, b in cont_dict_all.items():
+        for pos2, v2 in b.items():
+            list_pos_all.append(pos2)
+    list_pos_h=[]
+    for x, a in cont_dict_h_bonded.items():
+        for pos1, v1 in a.items():
+            list_pos_h.append(pos1)
+    for db in group:
+        for pos in list_pos_all:
+            for posh in list_pos_h:
+                if pos not in posh:
+                    cont_h_bonded[get_species(pdb)+"-"+pdb][pos]=14
+                if posh !=pos:
+                    cont_all[get_species(pdb)+"-"+pdb][posh]=14
+    df_all =pd.DataFrame.from_dict(cont_all,orient='index')
+    #df.set_index('pdb',inplace=True)
+    df_all=df_all[natsorted(df_all.columns)]
+    df_all.groupby(by=species,axis=1)
 
 
+    df_h =pd.DataFrame.from_dict(cont_h_bonded,orient='index')
+    #df.set_index('pdb',inplace=True)
+    df_h=df_h[natsorted(df_h.columns)]
+    df_h.groupby(by=species,axis=1)
+    stacked_h = df_h.stack().reset_index()
+    stacked_h.rename(columns={'level_1': 'Position', 0: 'Residues'}, inplace=True)
+    stacked_h=stacked_h.sort_values(by=['Position'])
+    maxim_h=int(stacked_h['Residues'].max())
+    minim_h=int(stacked_h['Residues'].min())
+    cmap_h=['#ff0000', '#ffd700', '#6897bb', '#ff9a00', '#03396c', '#00e5e5', '#20b2aa', '#b6b4b9', '#635d5a', '#ff99aa', '#c9caff', '#f0c39e','#c8e6c8' ]
+    the_cmap_h=cmap_h[minim_h-1:maxim_h-1]
+    stacked_all = df_all.stack().reset_index()
+    stacked_all.rename(columns={'level_1': 'Position', 0: 'Residues'}, inplace=True)
+    stacked_all=stacked_all.sort_values(by=['Position'])
+    maxim_all=int(stacked_all['Residues'].max())
+    minim_all=int(stacked_all['Residues'].min())
+    cmap_all=['#ff0000', '#ffd700', '#6897bb', '#ff9a00', '#03396c', '#00e5e5', '#20b2aa', '#b6b4b9', '#635d5a', '#ff99aa', '#c9caff', '#f0c39e','#c8e6c8']
+    the_cmap_all=cmap_h[minim_all-1:maxim_all-1]
+
+
+
+    fig, (ax1, ax2) = plt.subplots(2,1,figsize=(size))
+    fig.autofmt_xdate()
+    plt.subplots_adjust(top=0.9) #adjust sublots labels to make room for title
+    #plt.suptitle("Number of contacts - " + name, fontsize = 36) #title
+    sns.heatmap(df_all, ax=ax1,xticklabels=True, yticklabels=True, linewidths=0.1, linecolor='black',annot=False, annot_kws={"size": 8}, cmap=(ListedColormap(the_cmap_all)), cbar=True)#.set_title("All contacts",y=1.1)
+    ax1.tick_params(labelbottom='off',labeltop='on', labelsize=12)
+    ax1.set_yticklabels(ax1.get_yticklabels(),rotation=0)
+    ax1.set_xticklabels(ax1.get_xticklabels(),rotation=90)
+    ax1.set_aspect("equal")
+    sns.heatmap(df_h, ax=ax2,xticklabels=True, yticklabels=True, linewidths=0.1, linecolor='black',annot=False, annot_kws={"size": 8}, cmap=(ListedColormap(the_cmap_h)), cbar=True)#.set_title("H bonded",y=1.1)
+    ax2.tick_params(labelbottom='off',labeltop='on', labelsize=12)
+    ax2.set_yticklabels(ax2.get_yticklabels(),rotation=0)
+    ax2.set_xticklabels(ax2.get_xticklabels(),rotation=90)
+    ax2.set_aspect("equal")
+    plt.show()
 
 
 """
-
 groups= [(cm,"cm1"),(cm2,"cm2"),(cm3, "cm3"), (m1, "m1"),(m2,"m2")]
 for chain in ["heavy"]:
     for cdr in [str(get_chain_letter(chain))+'1', str(get_chain_letter(chain))+'2',str(get_chain_letter(chain))+'3',"o"]:
         for (a,b) in groups:
             try:
-                get_cdr_on_epitope(a, b, chain, "all",(20,20), 5, cdr)
+                get_cdr_on_epitope(a, b, chain,"all", (15,15),5, cdr)
             except IndexError:
                 continue
+                
+"""
+def get_heatmap_ep_lesk(group, name, chain, type,  size):
+    #contacts1 =json.loads(open('equiv_contacts_dict_lsyozyme_pos_paratope_'+chain+'_'+type+'.json').read())
+    contacts_h_bonded=json.loads(open('equiv_contacts_dict_lsyozyme_pos_name_paratope_'+chain+'_h_bonded.json').read())
+    contacts_all =json.loads(open('equiv_contacts_dict_lsyozyme_pos_name_paratope_'+chain+'_all.json').read())
+    aa_type={"1": ["ASP", "GLU"],
+             "2":["CYS","MET"],
+             "3":["LYS","ARG"],
+             "4":["SER","THR"],
+             "5":["PHE","TYR"],
+             "6":["ASN","GLN"],
+             "7":["LEU","VA","ILE"],
+             "8":["GLY"],
+             "9":["ALA"],
+             "10":["TRP"],
+             "11":["HIS"],
+             "12":["PRO"]}
+
+    cont_dict_h_bonded={}
+    for k, v in contacts_h_bonded.items():
+        for pdb in group:
+            if pdb in k:
+                cont_dict_h_bonded[get_species(pdb)+"-"+pdb]={}
+                for pos, names in v.items():
+                    try:
+                        if all(aa in ["GLY","ALA","SER","THR"]for aa in names) is True:
+
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=1
+                        elif all(aa in ["CYS", "MET","VAL","ILE","LEU","PRO","PHE","TYR","TRP"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=2
+                        elif all(aa in ["ASN", "GLN","HIS"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=3
+
+                        elif all(aa in ["ASP", "GLU"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=4
+
+                        elif all(aa in ["LYS", "ARG"]for aa in names) is True:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=5
+
+                        else:
+                            cont_dict_h_bonded[get_species(pdb)+"-"+pdb][pos]=6
+
+
+                    except KeyError:
+                        continue
+    cont_dict_all={}
+    for k, v in contacts_all.items():
+        for pdb in group:
+            if pdb in k:
+                cont_dict_all[get_species(pdb)+"-"+pdb]={}
+                for pos, names in v.items():
+                    try:
+                        if all(aa in ["GLY","ALA","SER","THR"]for aa in names) is True:
+
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=1
+                        elif all(aa in ["CYS", "MET","VAL","ILE","LEU","PRO","PHE","TYR","TRP"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=2
+                        elif all(aa in ["ASN", "GLN","HIS"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=3
+
+                        elif all(aa in ["ASP", "GLU"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=4
+
+                        elif all(aa in ["LYS", "ARG"]for aa in names) is True:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=5
+
+                        else:
+                            cont_dict_all[get_species(pdb)+"-"+pdb][pos]=6
+
+
+                    except KeyError:
+                        continue
+    cont_h_bonded=cont_dict_h_bonded
+    cont_all=cont_dict_all
+    list_pos_all=[]
+    for y, b in cont_dict_all.items():
+        for pos2, v2 in b.items():
+            list_pos_all.append(pos2)
+    list_pos_h=[]
+    for x, a in cont_dict_h_bonded.items():
+        for pos1, v1 in a.items():
+            list_pos_h.append(pos1)
+    for db in group:
+        for pos in list_pos_all:
+            for posh in list_pos_h:
+                if pos not in posh:
+                    cont_h_bonded[get_species(pdb)+"-"+pdb][pos]=0
+                if posh !=pos:
+                    cont_all[get_species(pdb)+"-"+pdb][posh]=0
+    df_all =pd.DataFrame.from_dict(cont_all,orient='index')
+    #df.set_index('pdb',inplace=True)
+    df_all=df_all[natsorted(df_all.columns)]
+    df_all.groupby(by=species,axis=1)
+
+
+    df_h =pd.DataFrame.from_dict(cont_h_bonded,orient='index')
+    #df.set_index('pdb',inplace=True)
+    df_h=df_h[natsorted(df_h.columns)]
+    df_h.groupby(by=species,axis=1)
+    stacked_h = df_h.stack().reset_index()
+    stacked_h.rename(columns={'level_1': 'Position', 0: 'Residues'}, inplace=True)
+    stacked_h=stacked_h.sort_values(by=['Position'])
+    maxim_h=int(stacked_h['Residues'].max())
+    minim_h=int(stacked_h['Residues'].min())
+    cmap_h=['#ff0000', '#ffd700', '#6897bb', '#ff9a00', '#03396c', '#00e5e5', '#20b2aa', '#b6b4b9', '#635d5a', '#ff99aa', '#c9caff', '#f0c39e','#ffeffa']
+    the_cmap_h=cmap_h[minim_h:maxim_h-1]
+    stacked_all = df_all.stack().reset_index()
+    stacked_all.rename(columns={'level_1': 'Position', 0: 'Residues'}, inplace=True)
+    stacked_all=stacked_all.sort_values(by=['Position'])
+    maxim_all=int(stacked_all['Residues'].max())
+    minim_all=int(stacked_all['Residues'].min())
+    cmap_all=['#ff0000', '#ffd700', '#6897bb', '#ff9a00', '#03396c', '#00e5e5', '#20b2aa', '#b6b4b9', '#635d5a', '#ff99aa', '#c9caff', '#f0c39e','#ffeffa']
+    the_cmap_all=cmap_h[minim_all:maxim_all-1]
+
+
+
+    fig, (ax1, ax2) = plt.subplots(2,1,figsize=(size))
+    fig.autofmt_xdate()
+    plt.subplots_adjust(top=0.9) #adjust sublots labels to make room for title
+    #plt.suptitle("Number of contacts - " + name, fontsize = 36) #title
+    sns.heatmap(df_all, ax=ax1,xticklabels=True, yticklabels=True, linewidths=0.1, linecolor='black',annot=True, annot_kws={"size": 8}, cmap=(ListedColormap(the_cmap_all)), cbar=True).set_title("All contacts",y=1.1)
+    ax1.tick_params(labelbottom='off',labeltop='on', labelsize=12)
+    plt.yticks(rotation=0)
+    plt.xticks(rotation=90)
+    ax1.set_aspect("equal")
+    sns.heatmap(df_h, ax=ax2,xticklabels=True, yticklabels=True, linewidths=0.1, linecolor='black',annot=True, annot_kws={"size": 8}, cmap=(ListedColormap(the_cmap_h)), cbar=True).set_title("H bonded",y=1.1)
+    ax2.tick_params(labelbottom='off',labeltop='on', labelsize=12)
+    plt.yticks(rotation=0)
+    plt.xticks(rotation=90)
+    ax2.set_aspect("equal")
+    plt.show()
+
+
+
+groups= [(camel,"camel"),(mice, "mice"),(shark,"shark")]
+for (a,b) in groups:
+    #print(get_heatmap_cdr_bonding(a, b,"heavy","all" ,(10,10),5))
+    print(len(a))
+
+
+
+
 """               
 with open('aa_type_frequency_heavy.json', 'w') as ctr: #save the contact residues in a json file
     json.dump(get_heatmap_aa_type_cdr(unique, "unique_all_pdbs", "heavy", "all", (5,5), 5, "H3"), ctr)
 """
-
