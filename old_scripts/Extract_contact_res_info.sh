@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# v2.py is the modified version of Oxford's OPIG group
 for file in ./pdb_structures/*.pdb; do
     python v2.py --f1 ${file} --f2 ${file} --c1 AB --c2 C --c 4.5 --i 10.0 --jobid .\\$(basename ${file%.*})\\
 done
