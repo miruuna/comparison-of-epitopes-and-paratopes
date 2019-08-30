@@ -11,18 +11,7 @@ import requests
 import json
 from difflib import SequenceMatcher
 import pandas as pd
-s1=['1a2y', '1fdl', '1g7h', '1g7i', '1g7j', '1g7l', '1g7m', '1kir', '1vfb']
-s2=['1c08', '1j1o', '1j1p', '1j1x', '2dqi', '2dqj', '2znw', '3a67', '3a6b', '3a6c', '3d9a', '3hfm']
-#s3=['1dqj', '1nby', '1nbz','1ua6', '1uac']
-s4=['2eiz', '2eks', '2yss']
-s5=['1jto', '1jtp', '1jtt']
-g1a=['1ri8', '1bql', '1ndg', '1ndm', '1p2c', '1zv5', '1mlc', '2iff']
-g1b=[ '1a2y', '1kiq', '1kip']
-g1c=['1jto', '1xfp']
-g2=['2dqd', '1xgr', '1xgt', '1xgq', '1dqj', '2dqc', '1c08', '1xgu', '1ic5', '1ic4', '1ic7', '2dqh', '1ua6', '1xgp', '2dqe', '2dqg']
-g1_mice= g2
-g2_mice= g1a
-g3_cs=['1jto','1jtp', '1jtt','1rjc','1xfp','1zmy','1t6v','1sq2','2i25','2i26']
+
 
 pdb_codes1= json.loads(open('pdb_codes_lysozyme.json').read())
 cdrs= json.loads(open('CDRS_update3.json').read())
@@ -33,7 +22,7 @@ pairwise_sc=json.loads(open('pairwise_score.txt').read())
 def get_pairwise_score():
     pairwise_dict={}
     for k, v in pairwise_sc.items():
-        pairwise_dict[k]=v/71000000
+        pairwise_dict[k]=v
     return pairwise_dict
 def flatten_column(df, column_name):
     repeat_lens = [len(item) if item is not np.nan else 1 for item in df[column_name]]
@@ -44,7 +33,7 @@ def flatten_column(df, column_name):
     expanded_df[column_name] = flat_column_values
     expanded_df[column_name].replace('nan', np.nan, inplace=True)
     return expanded_df
-
+#------------------------------------------ Fetch CDRs from PyIgClassify------------------------------------------------------------------------
 def get_list(pdb):
     page_link = "http://dunbrack2.fccc.edu/PyIgClassify/Result/ChainCdrClusterInfo.aspx?pdb="+pdb.upper()
     page_response = requests.get(page_link, timeout=5)
@@ -95,6 +84,10 @@ def get_cdr_by_chain():
             elif "H" in c:
                 d1[k]['heavy']+=seq
     return d1
+
+#------------------------------------------------------------------Compare CDRs--------------------------------------------------------------------
+
+
 
 def seq_matcher(chain):
     key_list=[]
@@ -182,14 +175,18 @@ def get_fasta(group):
             outfile.write(">"+pdb+"\n"+get_cdr_by_chain()[pdb]['heavy']+"\n")
 
 #for group in [s1, s2,s3,s4,s5]:
-    #get_fasta(group)
+#get_fasta(group)
 
 def compare_score():
+    """
+    Different statictis of similarity scores
+    :return:
+    """
     pdb=['1sq2','1t6v','1ua6','2dqh','3a6c','2i25','2dqf','2dqe','1j1x','2i26','1zvy','2dqd','3a67','3a6b','2znw','2hfm','1c08','2dqj','2dqi','1rjc','1uac','2dqg','1j1p','1ri8','1jtt','1op9','3eba','1xfp','1zmy','1jto','1jtp','4i0c','1dzb','1fdl','1kir','1a2y','1vfb','1kiq','1kip','1g7h','1g7i','1g7m','1g7j','1g7l','1bql','2iff','1yqv','1mlc','1p2c','3d9a','3hfm','1ndg','1ndm','1xgr','1dqj','1nby','1nbz','1xgp','1xgt','1xgu','1xgq','2yss','2eiz','2eks','1jhl','1zv5','1ic4','2dqc','1zvh','1ic7','1ic5','1j1o']
     d_sc=['0.03739','0.03739','0.03969','0.01384','0.00252','0.01465','0.01465','0.02407','0.00548','0.0044','0.0044','0.0278','0.0077','0.00184','0.07452','0.06543','0.02281','0.00903','0.0001','0.03168','0.03168','0.01028','0.00053','0.05061','0.05061','0.02086','0.02047','0.07435','0.08037','0.00461','0.00063','0.13456','0.27224','0.03685','0.01443','0.00996','0.00507','0.00022','0.00225','0.00224','0.00224','0.00224','0.00193','0.00856','0','0','0.00458','0.03092','0.03069','0.00227','0.00246','0.01913','0.00785','0.00258','0','0','0','0.00118','0.00118','0.00118','0.00114','0.00303','0.00595','0.01042','0.01042','0.02224','0.01097','0.00057','0.03111','0.03111','0.01148','0.0002']
     dist_sc=pd.DataFrame({'PDB':pdb ,
                           'dist_sc': d_sc})
-    d_sc=pd.read_excel("cladogram.xlsx")
+    d_sc=pd.read_excel("cladogram.xlsx") #the MSA cladogram obtained from EBI's Clustal Omega
     pairwise_sc=pd.DataFrame.from_dict(get_pairwise_score(),orient='index')
     pairwise_sc.index.rename('PDB', inplace=True)
     pairwise_sc.rename(columns={ 0: 'pairwse_score'}, inplace=True)
@@ -237,8 +234,8 @@ def flip_dict(dictionary):
     return flipped
 def get_species_groups():
     d_gr={"I": g1_mice,
-                  "II": g2_mice,
-                  "III": g3_cs}
+          "II": g2_mice,
+          "III": g3_cs}
     d_gr_species={}
     for k, v in d_gr.items():
         d_gr_species[k]={}
@@ -260,12 +257,13 @@ def get_species_groups():
 
 
     return
-print(compare_score())
+print(get_dict_cdrs('1xgt'))
+print(get_dict_cdrs('1xgq'))
 
 
-
+print(seq_matcher('heavy')["1xgt"])
+print(seq_matcher('heavy')["1xgq"])
 
 
 #with open('CDRs_by_chain.json', 'w') as ctr: #save the contact residues in a json file
 #   json.dump(get_cdr_by_chain(), ctr)
-
