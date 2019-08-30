@@ -587,7 +587,7 @@ def get_heatmap_cdr_bonding( group, name,chain,type,  size, x):
                     no_cdr_b[get_species(pdb)+"-"+pdb][chain_type+"3"]+=1
                     cdr_by_species[chain_type+"3"]+=1
 
-        eq_dict_all[get_species(pdb)+"-"+pdb]=d_pos
+        eq_dict_all[pdb]=d_pos
     eq_dict_h_bonded={}
     for pdb, pos in get_heatmap_CDR( group, name,chain, "h_bonded", size, x).items():
         d_pos={}
@@ -684,8 +684,9 @@ def get_heatmap_cdr_bonding( group, name,chain,type,  size, x):
     df=pd.DataFrame.from_dict(cdr_by_species, orient="index")
     df.index.rename('CDR', inplace=True)
     df.rename(columns={ 0: type}, inplace=True)
-    with open("cdr_freq_"+name+"_"+chain+"_"+type+".json", 'w') as ctr: #save the contact residues in a json file
-        json.dump(cdr_by_species, ctr)
+    #with open("cdr_freq_"+name+"_"+chain+"_"+type+".json", 'w') as ctr: #save the contact residues in a json file
+        #json.dump(cdr_by_species, ctr)
+    return(eq_dict_all)
 
 
 def get_the_heatmap_fw(group, name,chain,  size, x):
@@ -1444,3 +1445,25 @@ for (a,b) in groups:
 with open('aa_type_frequency_heavy.json', 'w') as ctr: #save the contact residues in a json file
     json.dump(get_heatmap_aa_type_cdr(unique, "unique_all_pdbs", "heavy", "all", (5,5), 5, "H3"), ctr)
 """
+
+pos_epitope=json.loads(open('equiv_contacts_dict_lsyozyme_pos_paratope_pos_all.json').read())
+#print(pos_epitope['1c08']['102'])
+dict_pos={}
+def get_cdr_pattenrs():
+    cds=get_heatmap_fw(pdb_codes1, "all","heavy","all" ,(10,10), 5)
+    for k, v in cds.items():
+        list_cdr=[]
+        for pos, cd in v.items():
+            if len(cd) >0:
+                list_cdr.append(cd[0])
+        dict_pos[k]=list_cdr
+    df_all=pd.DataFrame.from_dict(dict_pos, orient="index")
+    #resturn(df_all)
+    df_all.to_excel("cdr_binding.xlsx")
+    return(dict_pos)
+
+
+
+
+with open('fw_binding.json', 'w') as ctr: #save the contact residues in a json file
+    json.dump(get_cdr_pattenrs(), ctr)
