@@ -1,3 +1,5 @@
+#This script contains the function get_contacts() which returns a nested dictionary of the interaction residues for the antibody/aantigen and their different chains
+
 import json
 import pandas as pd
 import seaborn as sns
