@@ -124,5 +124,5 @@ with open('data_lysozyme_update.json', 'w') as fp:
     json.dump(store_data(), fp)
 
 #store pdb codes
-#with open('pdb_codes_lysozyme.json','w') as fp:
-    #json.dump(pdb_codes, fp)
+with open('pdb_codes_lysozyme.json','w') as fp:
+    json.dump(pdb_codes, fp)
