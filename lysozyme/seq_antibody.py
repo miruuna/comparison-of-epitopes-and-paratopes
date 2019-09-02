@@ -3,22 +3,26 @@ import json
 import re
 import os
 from Bio.SubsMat import MatrixInfo as matlist
+import pandas as pd
 from Bio import pairwise2
+import json
+import pandas as pd
+import seaborn as sns
+from natsort import natsorted
+import matplotlib.pyplot as plt
+import numpy as np
 from Bio.pairwise2 import format_alignment
 m1=['2dqd', '1xgr', '1xgt', '1xgq', '1dqj', '2dqc', '1c08', '1xgu', '1ic5', '1ic4', '1ic7', '2dqh', '1ua6', '1xgp', '2dqe', '2dqg']
 m2=['1bql','1mlc', '2iff']
 cm=['1jto', '1jtp', '1jtt','1xfp','1zmy','2i25','2i26']
 cm2=['1zvy','1sq2','1t6v']
 cm3=['1ri8','1rjc','1zv5']
-annotation = json.loads(open('data_lysozyme_update.json').read())
+the_ag=["4i0c"]
+
+annotation = json.loads(open('data_lysozyme.json').read())
 pdb_codes= json.loads(open('pdb_codes_lysozyme.json').read())
-s1=['1a2y', '1fdl', '1g7h', '1g7i', '1g7j', '1g7l', '1g7m', '1kir', '1vfb']
-s2=['1c08', '1j1o', '1j1p', '1j1x', '2dqi', '2dqj', '2znw', '3a67', '3a6b', '3a6c', '3d9a', '3hfm']
-s3=['1dqj', '1nby', '1nbz','1ua6', '1uac']
-s4=['2eiz', '2eks', '2yss']
-s5=['1jto', '1jtp', '1jtt']
-sim_gr_0157=['1c08', '1j1o', '1j1p', '1j1x', '2dqi', '2dqj', '2znw', '3a67', '3a6b', '3a6c', '3d9a', '3hfm']
-pdb_codes_update=['4tsa', '4tsb', '4tsc','4ttd','4pgj']
+unique=['1sq2','1t6v','2hfm','2i25','2i26','1a2y', '1bql', '1c08', '1dqj', '1dzb', '1ic4', '1ic5', '1ic7', '1jhl', '1kip', '1kiq', '1mlc', '1ndg', '1ndm', '1p2c', '1ua6', '1xgp', '1xgq', '1xgr', '1xgt', '1xgu', '2dqc', '2dqd', '2dqe', '2dqf', '2dqg', '2dqh', '2eiz', '2iff', '4tsa', '4tsb', '4tsc', '4ttd', '1jto', '1op9', '1ri8', '1xfp', '1zmy', '1zv5', '1zvh', '1zvy', '4i0c']
+
 def get_annotation_string(pdb):
     """
     :param pdb:
@@ -26,15 +30,15 @@ def get_annotation_string(pdb):
     """
     antigen_list=''
     if len(annotation[pdb]['antigen'])>2:
-        antigen_list=annotation[pdb]['antigen'][0]+','+annotation[pdb]['antigen'][1]
+        antigen_list=annotation[pdb]['antigen'][0]#+','+annotation[pdb]['antibody'][1]
     else:
         for antigen in annotation[pdb]['antigen']:
             antigen_list=antigen_list+','+antigen
     return antigen_list[1:] #omit the , at the beginning of string
 
-def get_fasta_files():
-    for pdb in pdb_codes_update:
-        cmd= "pdb_fetch "+pdb+" | pdb_selchain -"+get_annotation_string(pdb)+" | pdb_tofasta >> ./fasta_lysozyme/"+pdb+".fasta"
+def get_fasta_files(group, name):
+    for pdb in group:
+        cmd= "pdb_fetch "+pdb+" | pdb_tofasta >> ./fasta1/"+pdb+".fasta"
         subprocess.run(cmd, shell=True)
 
 def process_fasta():
@@ -80,17 +84,51 @@ def write_new_file():
             f2.write(line)
 
 
-def get_alignment(group):
+groupa_b=['1xgt', '1xgq']
+def get_alignment(group, name):
     matrix = matlist.blosum62
     p={}
+    a={}
+    b={}
     for k in group:
+        b[k]=[]
         p[k]=0
         for i in group:
             if i!=k:
-                for al1,al2, score, begin, end in pairwise2.align.globalms(get_sequences_from_pdb()[k], get_sequences_from_pdb()[i], 2, -1, -.5, -.1):
+                for al1,al2, score, begin, end in pairwise2.align.globalms(get_sequences_from_pdb()[k], get_sequences_from_pdb()[i], 1, -5, -10, -5):
                     p[k]+=score
-    return p
-groups= [(cm,"cm1"),(cm2,"cm2"),(cm3, "cm3"), (m1, "m1"),(m2,"m2")]
-for (a,b) in groups:
-    with open('pairwise_score'+b+'.txt', 'w') as ctr: #save the contact residues in a json file
-        json.dump(get_alignment(a), ctr)
+        a[k]=abs(p[k])/len(group)
+
+    df=pd.DataFrame.from_dict(data=a, orient="index")
+    df.to_excel(name+"_scores.xlsx")
+    return a
+
+def get_alignment_matrix(group, name):
+    matrix = matlist.blosum62
+    p={}
+    a={}
+    b={}
+    for k in group:
+        b[k]=[]
+        p[k]={}
+        for i in group:
+            if i!=k:
+                p[k][i]=0
+                for al1,al2, score, begin, end in pairwise2.align.globalms(get_sequences_from_pdb()[k], get_sequences_from_pdb()[i], 1, -5, -1, -1):
+                    p[k][i]+=score
+            else:
+                p[k][i]=0
+        a[k]=abs(p[k])/(len(group)-1)
+
+
+    df=pd.DataFrame.from_dict(data=p, orient="index")
+    df.to_excel(name+"_scores.xlsx")
+    cmap=sns.palplot(sns.light_palette("purple"))
+    fig, ax = plt.subplots(figsize=(30,30))
+    sns.heatmap(df,cmap=cmap,ax=ax)
+    plt.show()
+    return a
+
+#for (a,b) in [(m1,"m1"),(m2,"m2"),(cm,"cm1"),(cm2,"cm2"),(cm3,"cm3")]:
+   # print(get_alignment_matrix(a,b))
+print(len(unique))
