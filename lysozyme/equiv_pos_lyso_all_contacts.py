@@ -1,3 +1,9 @@
+
+#This script contains the functions for computing the equivalent positions of the interating Ag residues.
+#Equivalent positions were calculated using the multiple sequence alignment obtained from EBI'S Clustal Omega.
+#The equivalebnt positions for different chains or combination of chains are saved in json format to be used in further analyses
+#The multiple sequence alignment page is only stored for 2 weeks, thus page_link has to be changed accordingly
+
 from collections import defaultdict
 from itertools import chain
 
@@ -22,7 +28,7 @@ germ_line=json.loads(open("germ_lines_lysozime.json").read())
 
 unique_species = [k for k,v in species.items() if list(species.values()).count(v)==1]
 
-page_link = 'https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/clustalo-I20190715-151304-0447-55304145-p2m/aln-clustal_num'
+page_link = 'http://www.ebi.ac.uk/Tools/services/rest/clustalo/result/clustalo-E20190804-101942-0556-43333684-p1m/aln-clustal_num'
 page_response = requests.get(page_link, timeout=5)
 text = BeautifulSoup(page_response.text, "html.parser")
 
@@ -122,18 +128,18 @@ def get_equivalent_contacts():
         #quiv_contacts[pdb]= {}
         eq={}
         for pdb, v in contacts_dict.items():
-            eq[pdb]={}
+            eq[pdb]=[]
             for elem, value in v.items():
                 for k in equiv_pos_alignment[pdb].keys():
                     if str(equiv_pos_alignment[pdb][k])!='-':
                         if str(elem) == str(equiv_pos_alignment[pdb][k]):
-                            eq[str(k)]=value
-                            eq[pdb][str(k)]=value
+                            eq[pdb].append(k)
 
-            equiv_contacts[str(species[pdb])+": "+str(pdb)]=eq[pdb]
+
+            equiv_contacts[pdb]=eq[pdb]
     return equiv_contacts
 
 
 
-with open('equiv_contacts_dict_lsyozyme_all_contacts.json', 'w') as ctr: #save the contact residues in a json file
+with open('equiv_contacts_list_all_contacts_by_pdb.json', 'w') as ctr: #save the contact residues in a json file
     json.dump(get_equivalent_contacts(), ctr)
